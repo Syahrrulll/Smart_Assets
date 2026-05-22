@@ -20,8 +20,23 @@ $app = Application::configure(basePath: dirname(__DIR__))
         //
     })->create();
 
-if (isset($_ENV['VERCEL_URL']) || isset($_ENV['VERCEL'])) {
+if (isset($_SERVER['VERCEL_URL']) || isset($_ENV['VERCEL_URL']) || isset($_SERVER['VERCEL'])) {
     $app->useStoragePath('/tmp');
+
+    // Pastikan struktur folder storage ada di dalam /tmp Vercel
+    $directories = [
+        '/tmp/app',
+        '/tmp/framework/views',
+        '/tmp/framework/cache/data',
+        '/tmp/framework/sessions',
+        '/tmp/logs',
+    ];
+
+    foreach ($directories as $dir) {
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+    }
 }
 
 return $app;
