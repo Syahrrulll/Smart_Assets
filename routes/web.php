@@ -57,7 +57,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/backup/download', function () {
             if (Auth::user()->role !== 'admin') abort(403);
             
-            $backupDir = storage_path('app/Laravel');
+            $backupDir = storage_path('app/private/Laravel');
             if (!File::exists($backupDir)) {
                 return back()->with('error', 'Belum ada file backup yang tersedia. Jalankan php artisan backup:run terlebih dahulu.');
             }

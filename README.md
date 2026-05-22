@@ -102,5 +102,82 @@ Sistem menggunakan manifest `manifest.json` dan didesain responsif untuk layar k
 3. **Peminjaman:** Budi meminjam Laptop tersebut ke luar kota. Staf mencatat *Checkout* di sistem.
 4. **Maintenance:** Bulan ke-6, sistem otomatis menyalakan peringatan *Maintenance* di Dasbor. Teknisi melakukan pembersihan debu laptop (Rp 100 Ribu) dan menandai tiket sebagai *Resolved*.
 5. **Pemindahan:** Setahun kemudian, laptop dipindahkan ke Ruang Direktur. Staf membuat *Relocation Request*, dan Admin menyetujuinya.
-6. **Depresiasi:** Di tahun ke-4, nilai buku laptop otomatis tercatat turun menjadi Rp 4 Juta di Dasbor Keuangan.
 7. **Penghapusan:** Tahun ke-6, laptop mati total. Staf membuat *Disposal Request*. Admin mengecek, dan melegalkan penghapusan aset tersebut dari inventaris aktif.
+
+---
+
+## 🚀 Cara Instalasi & Menjalankan Aplikasi
+
+Berikut adalah langkah-langkah untuk menginstal dan menjalankan aplikasi Smart Asset Management di sistem operasi Windows (terutama jika menggunakan **Laragon** atau XAMPP).
+
+### 1. Persiapan Lingkungan
+Pastikan Anda sudah menginstal:
+- **PHP** (Minimal versi 8.2)
+- **Composer**
+- **MySQL / MariaDB** (Sudah termasuk di dalam Laragon/XAMPP)
+- **Node.js & NPM** (Opsional untuk frontend, meskipun sistem ini bisa menggunakan CDN Tailwind)
+
+### 2. Kloning Repositori
+Buka terminal Anda dan kloning proyek ini:
+```bash
+git clone https://github.com/Syahrrulll/Smart_Assets.git
+cd Smart_Assets
+```
+
+### 3. Instalasi Dependensi
+Jalankan perintah berikut untuk mengunduh semua pustaka PHP yang dibutuhkan:
+```bash
+composer install
+```
+
+### 4. Konfigurasi Environment (`.env`)
+Salin file konfigurasi bawaan dan hasilkan kunci aplikasi (App Key):
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+Buka file `.env` di teks editor Anda, dan sesuaikan konfigurasi database:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=inventaris
+DB_USERNAME=root
+DB_PASSWORD=
+```
+*(Catatan: Buatlah database kosong dengan nama `inventaris` di phpMyAdmin atau HeidiSQL milik Laragon).*
+
+**Konfigurasi Khusus Windows (Untuk Backup)**
+Jika Anda menggunakan Windows dan ingin fitur **Backup Database** berjalan lancar, Anda wajib menambahkan *path* mysqldump di akhir file `.env`:
+```env
+# Sesuaikan versi mysql Anda di folder Laragon
+DUMP_BINARY_PATH='E:\Software\laragon\bin\mysql\mysql-8.4.3-winx64\bin'
+```
+
+### 5. Migrasi Database & Seeding (Data Awal)
+Untuk membangun struktur tabel dan memuat akun administrator bawaan, jalankan:
+```bash
+php artisan migrate --seed
+```
+
+### 6. Tautkan Penyimpanan (Storage Link)
+Agar foto-foto barang dan gambar profil bisa diakses oleh publik, jalankan:
+```bash
+php artisan storage:link
+```
+
+### 7. Menjalankan Server Lokal
+Nyalakan server bawaan Laravel:
+```bash
+php artisan serve
+```
+Buka browser Anda dan kunjungi: **http://localhost:8000**
+
+---
+
+### 🔑 Akun Default (Login)
+Jika Anda menggunakan seeder bawaan, gunakan kredensial berikut untuk masuk sebagai Admin:
+- **Email:** `admin@admin.com`
+- **Password:** `password`
+
+*(Pastikan untuk mengganti kata sandi ini segera setelah berhasil masuk ke sistem di menu Pengaturan Pengguna).*
