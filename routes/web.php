@@ -52,7 +52,28 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('locations', LocationController::class)->only(['index', 'store', 'destroy']);
         
         // Hapus Massal Barang
-        Route::post('items/bulk-delete', [ItemController::class, 'bulkDelete'])->name('items.bulkDelete');
+        Route::post('/items/bulk-delete', [ItemController::class, 'bulkDelete'])->name('items.bulkDelete');
+    
+        Route::get('/backup/download', function () {
+            if (Auth::user()->role !== 'admin') abort(403);
+            
+            $backupDir = storage_path('app/Laravel');
+            if (!File::exists($backupDir)) {
+                return back()->with('error', 'Belum ada file backup yang tersedia. Jalankan php artisan backup:run terlebih dahulu.');
+            }
+    
+            $files = File::files($backupDir);
+            if (count($files) == 0) {
+                return back()->with('error', 'Belum ada file backup yang tersedia.');
+            }
+    
+            // Ambil file terbaru
+            usort($files, function($a, $b) {
+                return $b->getMTime() - $a->getMTime();
+            });
+    
+            return response()->download($files[0]->getPathname());
+        })->name('backup.download');
         
         // Manajemen Pengguna
         Route::resource('users', UserController::class);

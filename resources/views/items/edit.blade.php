@@ -62,6 +62,14 @@
                     </div>
 
                     <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Interval Perawatan Berkala</label>
+                        <div class="flex items-center">
+                            <input type="number" name="maintenance_interval_months" value="{{ old('maintenance_interval_months', $item->maintenance_interval_months) }}" placeholder="Kosongkan jika tidak perlu" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-l-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 text-sm border-r-0" {{ Auth::user()->email !== 'admin@admin.com' ? 'readonly' : '' }}>
+                            <span class="px-4 py-2.5 bg-slate-100 border border-slate-200 border-l-0 rounded-r-xl text-sm text-slate-500">Bulan</span>
+                        </div>
+                    </div>
+
+                    <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1">Lokasi</label>
                         <select name="lokasi_barang" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 text-sm">
                             <option value="">-- Pilih Lokasi --</option>
@@ -69,6 +77,11 @@
                                 <option value="{{ $loc->nama_lokasi }}" {{ old('lokasi_barang', $item->lokasi_barang) == $loc->nama_lokasi ? 'selected' : '' }}>{{ $loc->nama_lokasi }}</option>
                             @endforeach
                         </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Harga Beli (Rp)</label>
+                        <input type="number" name="harga_beli" value="{{ old('harga_beli', $item->harga_beli ? intval($item->harga_beli) : '') }}" placeholder="Contoh: 15000000" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 text-sm" {{ Auth::user()->email !== 'admin@admin.com' ? 'readonly' : '' }}>
                     </div>
 
                     <div>

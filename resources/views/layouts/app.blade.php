@@ -96,6 +96,11 @@
                 <i class="fas fa-users w-6 {{ request()->routeIs('users.*') ? 'text-slate-300' : 'text-slate-500 group-hover:text-slate-300' }} transition-colors"></i>
                 <span class="font-medium text-sm">Pengguna</span>
             </a>
+            <!-- Backup Button -->
+            <a href="{{ route('backup.download') }}" class="flex items-center px-4 py-3 mb-1 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all group">
+                <i class="fas fa-database w-6 text-slate-500 group-hover:text-slate-300 transition-colors"></i>
+                <span class="font-medium text-sm">Backup Database</span>
+            </a>
             @endif
         </nav>
         

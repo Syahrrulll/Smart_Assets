@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class MaintenanceTicket extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'item_id',
         'reported_by',
         'issue_description',
         'status',
         'cost',
-        'resolved_at',
+        'resolved_at'
     ];
 
     protected $casts = [

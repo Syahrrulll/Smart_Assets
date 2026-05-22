@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Borrowing extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'item_id',
         'borrower_name',
         'borrowed_at',
         'expected_return_at',
         'returned_at',
-        'status',
+        'status'
     ];
 
     protected $casts = [

@@ -57,73 +57,133 @@
 @else
 
     <!-- Smart Command Center Widgets -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         
-        <!-- Ghost Asset Detector -->
-        <div class="bg-gradient-to-br from-rose-500 to-red-600 rounded-2xl shadow-lg shadow-rose-500/20 p-6 text-white relative overflow-hidden">
-            <div class="absolute -right-6 -top-6 text-white/10 text-9xl"><i class="fas fa-ghost"></i></div>
+        <!-- Depreciation Tracking -->
+        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg shadow-emerald-500/20 p-5 text-white relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 text-white/10 text-8xl"><i class="fas fa-chart-line"></i></div>
             <div class="relative z-10">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                        <i class="fas fa-search-location text-xl"></i>
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-coins text-sm"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-lg font-outfit">Ghost Asset Detector</h3>
-                        <p class="text-rose-100 text-xs">Pendeteksi Aset Terbengkalai (>6 Bulan)</p>
+                        <h3 class="font-bold text-base font-outfit">Depreciation</h3>
+                    </div>
+                </div>
+                
+                <div class="bg-white/10 rounded-xl p-3 backdrop-blur-sm mb-2 border border-white/20">
+                    <div class="flex flex-col mb-1">
+                        <span class="text-[10px] text-emerald-100 mb-0.5">Nilai Saat Ini</span>
+                        <span class="text-xl font-black leading-tight">Rp {{ number_format($financial_stats['total_saat_ini'] ?? 0, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="w-full bg-black/20 rounded-full h-1 mb-1">
+                        @php 
+                            $percent = ($financial_stats['total_awal'] > 0) ? ($financial_stats['total_saat_ini'] / $financial_stats['total_awal']) * 100 : 0;
+                        @endphp
+                        <div class="bg-white h-1 rounded-full" style="width: {{ $percent }}%"></div>
+                    </div>
+                    <div class="text-[9px] text-emerald-50 flex justify-between">
+                        <span>Modal: Rp {{ number_format($financial_stats['total_awal'] ?? 0, 0, ',', '.') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preventive Maintenance -->
+        <div class="bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl shadow-lg shadow-orange-500/20 p-5 text-white relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 text-white/10 text-8xl"><i class="fas fa-tools"></i></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-wrench text-sm text-orange-100"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base font-outfit">Maintenance</h3>
+                    </div>
+                </div>
+
+                @if(isset($maintenance_alerts) && count($maintenance_alerts) > 0)
+                    <div class="bg-white/10 rounded-xl p-3 backdrop-blur-sm mb-2 border border-white/20">
+                        <div class="flex items-end gap-2 mb-1">
+                            <span class="text-2xl font-black leading-none">{{ count($maintenance_alerts) }}</span>
+                            <span class="text-orange-100 text-[10px] font-medium mb-0.5">Jatuh Tempo</span>
+                        </div>
+                        <p class="text-[10px] text-orange-50 font-medium leading-tight line-clamp-2">Aset perlu diservis segera untuk mencegah kerusakan fatal.</p>
+                    </div>
+                    <button onclick="document.getElementById('maintenanceModal').classList.remove('hidden')" class="w-full py-2 bg-white text-orange-600 font-bold rounded-xl text-xs hover:bg-orange-50 transition-colors shadow-sm">
+                        Lihat <i class="fas fa-arrow-right ml-1"></i>
+                    </button>
+                @else
+                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm mb-2 border border-white/20 flex flex-col items-center justify-center text-center h-[88px]">
+                        <i class="fas fa-check-circle text-2xl text-emerald-300 mb-1"></i>
+                        <span class="font-bold text-xs">Jadwal Aman</span>
+                    </div>
+                @endif
+            </div>
+        </div>
+        
+        <!-- Ghost Asset Detector -->
+        <div class="bg-gradient-to-br from-rose-500 to-red-600 rounded-2xl shadow-lg shadow-rose-500/20 p-5 text-white relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 text-white/10 text-8xl"><i class="fas fa-ghost"></i></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-search-location text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base font-outfit">Ghost Asset</h3>
                     </div>
                 </div>
                 
                 @if(isset($ghost_assets) && count($ghost_assets) > 0)
-                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm mb-4 border border-white/20">
-                        <div class="flex items-end gap-3 mb-2">
-                            <span class="text-4xl font-black">{{ count($ghost_assets) }}</span>
-                            <span class="text-rose-100 font-medium mb-1">Aset Berisiko Hilang</span>
+                    <div class="bg-white/10 rounded-xl p-3 backdrop-blur-sm mb-2 border border-white/20">
+                        <div class="flex items-end gap-2 mb-1">
+                            <span class="text-2xl font-black leading-none">{{ count($ghost_assets) }}</span>
+                            <span class="text-rose-100 text-[10px] font-medium mb-0.5">Berisiko Hilang</span>
                         </div>
-                        <p class="text-xs text-rose-50 font-medium line-clamp-2">Peringatan: Barang-barang ini tidak pernah dipindai atau diperbarui selama lebih dari 6 bulan. Segera lakukan audit fisik!</p>
+                        <p class="text-[10px] text-rose-50 font-medium leading-tight line-clamp-2">> 6 bulan tak dicek.</p>
                     </div>
-                    <button onclick="document.getElementById('ghostModal').classList.remove('hidden')" class="w-full py-2.5 bg-white text-rose-600 font-bold rounded-xl text-sm hover:bg-rose-50 transition-colors shadow-sm">
-                        Lihat Detail Aset <i class="fas fa-arrow-right ml-1"></i>
+                    <button onclick="document.getElementById('ghostModal').classList.remove('hidden')" class="w-full py-2 bg-white text-rose-600 font-bold rounded-xl text-xs hover:bg-rose-50 transition-colors shadow-sm">
+                        Lihat <i class="fas fa-arrow-right ml-1"></i>
                     </button>
                 @else
-                    <div class="bg-white/10 rounded-xl p-6 backdrop-blur-sm mb-4 border border-white/20 flex flex-col items-center justify-center text-center h-32">
-                        <i class="fas fa-shield-check text-4xl text-emerald-300 mb-2"></i>
-                        <span class="font-bold text-sm">Gudang 100% Aman</span>
-                        <p class="text-xs text-rose-100 mt-1">Tidak ada aset yang terbengkalai.</p>
+                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm mb-2 border border-white/20 flex flex-col items-center justify-center text-center h-[88px]">
+                        <i class="fas fa-shield-check text-2xl text-emerald-300 mb-1"></i>
+                        <span class="font-bold text-xs">Gudang Aman</span>
                     </div>
                 @endif
             </div>
         </div>
 
         <!-- Smart Insight AI -->
-        <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg shadow-indigo-500/20 p-6 text-white relative overflow-hidden">
-            <div class="absolute -right-6 -top-6 text-white/10 text-9xl"><i class="fas fa-brain"></i></div>
+        <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg shadow-indigo-500/20 p-5 text-white relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 text-white/10 text-8xl"><i class="fas fa-brain"></i></div>
             <div class="relative z-10">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                        <i class="fas fa-lightbulb text-xl text-amber-300"></i>
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-lightbulb text-sm text-amber-300"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-lg font-outfit">Smart Insight AI</h3>
-                        <p class="text-indigo-100 text-xs">Rekomendasi Rencana Pengadaan</p>
+                        <h3 class="font-bold text-base font-outfit">Smart Insight</h3>
                     </div>
                 </div>
 
                 @if(isset($smart_insights) && count($smart_insights) > 0)
-                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm mb-4 border border-white/20">
-                        <div class="flex items-end gap-3 mb-2">
-                            <span class="text-4xl font-black">{{ count($smart_insights) }}</span>
-                            <span class="text-indigo-100 font-medium mb-1">Kategori Kritis</span>
+                    <div class="bg-white/10 rounded-xl p-3 backdrop-blur-sm mb-2 border border-white/20">
+                        <div class="flex items-end gap-2 mb-1">
+                            <span class="text-2xl font-black leading-none">{{ count($smart_insights) }}</span>
+                            <span class="text-indigo-100 text-[10px] font-medium mb-0.5">Kategori Kritis</span>
                         </div>
-                        <p class="text-xs text-indigo-50 font-medium line-clamp-2">Sistem mendeteksi kategori barang dengan tingkat kerusakan >30%. Direkomendasikan untuk pengajuan anggaran baru.</p>
+                        <p class="text-[10px] text-indigo-50 font-medium leading-tight line-clamp-2">Kerusakan >30%.</p>
                     </div>
-                    <button onclick="document.getElementById('insightModal').classList.remove('hidden')" class="w-full py-2.5 bg-white text-indigo-600 font-bold rounded-xl text-sm hover:bg-indigo-50 transition-colors shadow-sm">
-                        Lihat Rekomendasi AI <i class="fas fa-arrow-right ml-1"></i>
+                    <button onclick="document.getElementById('insightModal').classList.remove('hidden')" class="w-full py-2 bg-white text-indigo-600 font-bold rounded-xl text-xs hover:bg-indigo-50 transition-colors shadow-sm">
+                        Lihat <i class="fas fa-arrow-right ml-1"></i>
                     </button>
                 @else
-                    <div class="bg-white/10 rounded-xl p-6 backdrop-blur-sm mb-4 border border-white/20 flex flex-col items-center justify-center text-center h-32">
-                        <i class="fas fa-thumbs-up text-4xl text-emerald-300 mb-2"></i>
-                        <span class="font-bold text-sm">Kondisi Aset Prima</span>
-                        <p class="text-xs text-indigo-100 mt-1">Belum ada urgensi pengadaan barang baru.</p>
+                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm mb-2 border border-white/20 flex flex-col items-center justify-center text-center h-[88px]">
+                        <i class="fas fa-thumbs-up text-2xl text-emerald-300 mb-1"></i>
+                        <span class="font-bold text-xs">Aset Prima</span>
                     </div>
                 @endif
             </div>
@@ -263,7 +323,12 @@
                                 {{ $item->kondisi_barang ?? 'Unknown' }}
                             </span>
                         </td>
-                        <td class="py-4 px-3 text-sm text-slate-600">{{ $item->tahun_barang ?? '-' }}</td>
+                        <td class="py-4 px-3">
+                            <div class="text-sm text-slate-600">{{ $item->tahun_barang ?? '-' }}</div>
+                            @if($item->harga_beli)
+                                <div class="text-xs font-bold text-emerald-600 mt-1" title="Nilai Saat Ini">Rp {{ number_format($item->nilai_buku, 0, ',', '.') }}</div>
+                            @endif
+                        </td>
                         <td class="py-4 px-3">
                             <div class="flex justify-center">
                                 <div class="bg-white p-1 rounded shadow-sm border border-slate-200">
@@ -406,6 +471,47 @@
                             <td class="py-3 px-4 text-center text-rose-500 font-bold">{{ $insight['rusak'] }}</td>
                             <td class="py-3 px-4 text-center">
                                 <span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-xs font-bold">{{ $insight['persen'] }}%</span>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Maintenance Modal -->
+<div id="maintenanceModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl w-full max-w-2xl overflow-hidden shadow-xl transform transition-all">
+        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-orange-50">
+            <h3 class="text-lg font-bold text-slate-800"><i class="fas fa-tools text-orange-500 mr-2"></i>Peringatan Perawatan Aset</h3>
+            <button onclick="document.getElementById('maintenanceModal').classList.add('hidden')" class="text-slate-400 hover:text-rose-500 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <p class="text-sm text-slate-600 mb-4">Aset-aset berikut akan segera jatuh tempo atau telah melewati jadwal perawatannya. Segera buat tiket maintenance!</p>
+            <div class="max-h-64 overflow-y-auto overflow-x-auto">
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold sticky top-0">
+                            <th class="py-3 px-4">Nama Aset</th>
+                            <th class="py-3 px-4">Jatuh Tempo</th>
+                            <th class="py-3 px-4">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($maintenance_alerts ?? [] as $alert)
+                        <tr class="border-b border-slate-100 hover:bg-slate-50">
+                            <td class="py-3 px-4 font-medium">{{ $alert['item']->nama_barang }} <br><span class="text-xs text-slate-500 font-mono">{{ $alert['item']->kode_barang }}</span></td>
+                            <td class="py-3 px-4">{{ $alert['due_date']->format('d M Y') }}</td>
+                            <td class="py-3 px-4">
+                                @if($alert['is_overdue'])
+                                    <span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-xs font-bold">Terlewat</span>
+                                @else
+                                    <span class="bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs font-bold">Segera</span>
+                                @endif
                             </td>
                         </tr>
                         @endforeach

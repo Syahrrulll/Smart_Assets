@@ -14,6 +14,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ItemController extends Controller
 {
@@ -101,7 +103,49 @@ class ItemController extends Controller
             return $insights;
         });
 
-        return view('items.index', compact('items', 'list_lokasi', 'list_tahun', 'global_activities', 'ghost_assets', 'smart_insights'));
+        // =================================================================
+        // FITUR CERDAS 3: DEPRECIATION TRACKING (Total Nilai Aset)
+        // =================================================================
+        $financial_stats = Cache::remember('financial_stats', 3600, function () {
+            $allItems = Item::whereNotNull('harga_beli')->get();
+            $total_awal = 0;
+            $total_saat_ini = 0;
+
+            foreach($allItems as $item) {
+                $total_awal += $item->harga_beli;
+                $total_saat_ini += $item->nilai_buku; // Menggunakan accessor
+            }
+
+            return [
+                'total_awal' => $total_awal,
+                'total_saat_ini' => $total_saat_ini,
+                'penyusutan' => $total_awal - $total_saat_ini
+            ];
+        });
+
+        // =================================================================
+        // FITUR CERDAS 4: PREVENTIVE MAINTENANCE ALERTS
+        // =================================================================
+        $maintenance_alerts = Cache::remember('maintenance_alerts', 3600, function () {
+            $items = Item::whereNotNull('maintenance_interval_months')->get();
+            $alerts = [];
+            foreach ($items as $item) {
+                $baseDate = $item->last_maintenance_date ? Carbon::parse($item->last_maintenance_date) : $item->created_at;
+                $dueDate = $baseDate->copy()->addMonths($item->maintenance_interval_months);
+                
+                // Peringatkan jika sudah jatuh tempo ATAU sisa waktu < 14 hari
+                if (Carbon::now()->addDays(14)->greaterThanOrEqualTo($dueDate)) {
+                    $alerts[] = [
+                        'item' => $item,
+                        'due_date' => $dueDate,
+                        'is_overdue' => Carbon::now()->greaterThan($dueDate)
+                    ];
+                }
+            }
+            return collect($alerts)->sortBy('due_date')->take(10);
+        });
+
+        return view('items.index', compact('items', 'list_lokasi', 'list_tahun', 'global_activities', 'ghost_assets', 'smart_insights', 'financial_stats', 'maintenance_alerts'));
     }
 
     public function create(Request $request)
@@ -125,6 +169,8 @@ class ItemController extends Controller
             'tahun_barang' => 'nullable|integer',
             'lokasi_barang' => 'nullable',
             'kondisi_barang' => 'nullable',
+            'harga_beli' => 'nullable|numeric',
+            'maintenance_interval_months' => 'nullable|integer',
             'foto_barang' => 'image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
@@ -135,8 +181,11 @@ class ItemController extends Controller
         }
 
         if ($request->hasFile('foto_barang')) {
-            $imageName = time().'.'.$request->foto_barang->extension();
-            $request->foto_barang->move(public_path('images/items'), $imageName);
+            $imageName = time().'.jpg';
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($request->file('foto_barang')->getRealPath());
+            $image->scaleDown(width: 1024);
+            $image->toJpeg(70)->save(public_path('images/items/'.$imageName));
             $input['foto_barang'] = 'images/items/'.$imageName;
         }
 
@@ -150,6 +199,9 @@ class ItemController extends Controller
             'old_value' => '-',
             'new_value' => 'Barang Ditambahkan'
         ]);
+
+        Cache::forget('financial_stats');
+        Cache::forget('maintenance_alerts');
 
         return redirect()->route('items.index')->with('success', 'Barang berhasil ditambahkan.');
     }
@@ -173,6 +225,8 @@ class ItemController extends Controller
             'tahun_barang' => 'nullable|integer',
             'lokasi_barang' => 'nullable',
             'kondisi_barang' => 'nullable',
+            'harga_beli' => 'nullable|numeric',
+            'maintenance_interval_months' => 'nullable|integer',
             'foto_barang' => 'image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
@@ -186,12 +240,15 @@ class ItemController extends Controller
             if ($item->foto_barang && File::exists(public_path($item->foto_barang))) {
                 File::delete(public_path($item->foto_barang));
             }
-            $imageName = time().'.'.$request->foto_barang->extension();
-            $request->foto_barang->move(public_path('images/items'), $imageName);
+            $imageName = time().'.jpg';
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($request->file('foto_barang')->getRealPath());
+            $image->scaleDown(width: 1024);
+            $image->toJpeg(70)->save(public_path('images/items/'.$imageName));
             $input['foto_barang'] = 'images/items/'.$imageName;
         }
 
-        $fieldsToTrack = ['nama_barang', 'kode_barang', 'nup', 'tahun_barang', 'lokasi_barang', 'kondisi_barang'];
+        $fieldsToTrack = ['nama_barang', 'kode_barang', 'nup', 'tahun_barang', 'lokasi_barang', 'kondisi_barang', 'harga_beli', 'maintenance_interval_months'];
         foreach ($fieldsToTrack as $field) {
             if (isset($input[$field]) && $item->$field != $input[$field]) {
                 ItemHistory::create([
@@ -206,6 +263,9 @@ class ItemController extends Controller
         }
 
         $item->update($input);
+
+        Cache::forget('financial_stats');
+        Cache::forget('maintenance_alerts');
 
         if (Auth::user()->role !== 'admin') {
             return redirect()->route('items.edit', ['item' => $item->id, 'scanned_from_qr' => 1])
@@ -223,6 +283,9 @@ class ItemController extends Controller
             File::delete(public_path($item->foto_barang));
         }
         $item->delete();
+
+        Cache::forget('financial_stats');
+        Cache::forget('maintenance_alerts');
 
         return redirect()->route('items.index')->with('success', 'Barang berhasil dihapus.');
     }
