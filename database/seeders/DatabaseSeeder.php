@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Super Admin',
             'email' => 'admin@admin.com',
             'password' => Hash::make('password'), // Password: password
+            'role' => 'admin',
         ]);
 
         // 2. BUAT USER PETUGAS (Untuk Tes QR Strict Mode)
@@ -26,6 +27,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Petugas Gudang',
             'email' => 'staf@gudang.com',
             'password' => Hash::make('password'), // Password: password
+            'role' => 'user',
         ]);
 
         
