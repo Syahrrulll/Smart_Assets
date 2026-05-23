@@ -20,7 +20,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
         //
     })->create();
 
-if (isset($_SERVER['VERCEL_URL']) || isset($_ENV['VERCEL_URL']) || isset($_SERVER['VERCEL'])) {
+if ((isset($_SERVER['VERCEL_URL']) || isset($_ENV['VERCEL_URL']) || isset($_SERVER['VERCEL'])) && env('APP_ENV') !== 'local') {
     $app->useStoragePath('/tmp');
 
     // Pastikan struktur folder storage ada di dalam /tmp Vercel
