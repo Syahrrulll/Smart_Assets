@@ -20,7 +20,7 @@
     <!-- Quick Actions -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Scan QR Card -->
-        <a href="{{ route('items.index') }}" class="group bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all flex flex-col items-center justify-center text-center gap-4 cursor-pointer">
+        <a href="{{ route('scanner') }}" class="group bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all flex flex-col items-center justify-center text-center gap-4 cursor-pointer">
             <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
                 <i class="fas fa-qrcode"></i>
             </div>

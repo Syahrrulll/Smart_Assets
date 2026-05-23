@@ -183,9 +183,9 @@ class ItemController extends Controller
         if ($request->hasFile('foto_barang')) {
             $imageName = time().'.jpg';
             $manager = new ImageManager(new Driver());
-            $image = $manager->read($request->file('foto_barang')->getRealPath());
+            $image = $manager->decode($request->file('foto_barang')->getRealPath());
             $image->scaleDown(width: 1024);
-            $image->toJpeg(70)->save(public_path('images/items/'.$imageName));
+            $image->save(public_path('images/items/'.$imageName));
             $input['foto_barang'] = 'images/items/'.$imageName;
         }
 
@@ -242,9 +242,9 @@ class ItemController extends Controller
             }
             $imageName = time().'.jpg';
             $manager = new ImageManager(new Driver());
-            $image = $manager->read($request->file('foto_barang')->getRealPath());
+            $image = $manager->decode($request->file('foto_barang')->getRealPath());
             $image->scaleDown(width: 1024);
-            $image->toJpeg(70)->save(public_path('images/items/'.$imageName));
+            $image->save(public_path('images/items/'.$imageName));
             $input['foto_barang'] = 'images/items/'.$imageName;
         }
 

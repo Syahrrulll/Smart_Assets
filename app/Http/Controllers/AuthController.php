@@ -27,7 +27,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             // Jika sukses, arahkan ke dashboard/index
-            return redirect()->route('items.index');
+            return redirect()->intended(route('items.index'));
         }
 
         // Jika gagal, kembali ke login dengan error

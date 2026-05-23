@@ -42,6 +42,11 @@ Route::middleware(['auth'])->group(function () {
         return view('staff.dashboard');
     })->name('staff.dashboard');
 
+    // Fitur Web Scanner
+    Route::get('/scanner', function () {
+        return view('scanner');
+    })->name('scanner');
+
     // Pelaporan Staf
     Route::get('/reports/create', [\App\Http\Controllers\ReportController::class, 'create'])->name('reports.create');
     Route::post('/reports', [\App\Http\Controllers\ReportController::class, 'store'])->name('reports.store');
